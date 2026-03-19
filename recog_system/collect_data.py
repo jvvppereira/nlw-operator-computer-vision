@@ -4,10 +4,10 @@ import csv
 import os
 import time
 
-# --- CONFIGURAÇÃO DO DATASET ---
+# --- DATASET CONFIGURATION ---
 CSV_FILENAME = 'dataset_gestures.csv'
-TARGET_LABEL = 'small_heart'  # Nome do gesto para as amostras salvas
-AUTO_SAVE = True       # Se True, salva automaticamente toda vez que detectar uma mão
+TARGET_LABEL = 'small_heart'  # Gesture name for saved samples
+AUTO_SAVE = True       # If True, automatically saves whenever a hand is detected
 # ------------------------------
 
 # MediaPipe setup (Tasks API)
@@ -16,7 +16,7 @@ HandLandmarker = mp.tasks.vision.HandLandmarker
 HandLandmarkerOptions = mp.tasks.vision.HandLandmarkerOptions
 VisionRunningMode = mp.tasks.vision.RunningMode
 
-# Conexões das mãos para desenho
+# Hand connections for drawing
 HAND_CONNECTIONS = [
     (0, 1), (1, 2), (2, 3), (3, 4), (0, 5), (5, 6), (6, 7), (7, 8),
     (9, 10), (10, 11), (11, 12), (13, 14), (14, 15), (15, 16),
@@ -24,7 +24,7 @@ HAND_CONNECTIONS = [
 ]
 
 def save_to_csv(landmarks, label, filename):
-    """Salva os 21 pontos (x, y, z) em um CSV."""
+    """Saves the 21 points (x, y, z) to a CSV."""
     data = [label]
     for lm in landmarks:
         data.extend([lm.x, lm.y, lm.z])
@@ -41,15 +41,15 @@ def save_to_csv(landmarks, label, filename):
 
 def main():
     global AUTO_SAVE
-    print(f"Iniciando coleta de dados (AUTO_SAVE={AUTO_SAVE}) para: {TARGET_LABEL}")
-    print("Pressione 'a' para ligar/desligar salvamento automático.")
-    print("Pressione 's' para salvar manualmente.")
-    print("Pressione 'q' para sair.")
+    print(f"Starting data collection (AUTO_SAVE={AUTO_SAVE}) for: {TARGET_LABEL}")
+    print("Press 'a' to toggle auto-save.")
+    print("Press 's' to save manually.")
+    print("Press 'q' to quit.")
     
     options = HandLandmarkerOptions(
         base_options=BaseOptions(model_asset_path='hand_landmarker.task'),
         running_mode=VisionRunningMode.IMAGE,
-        num_hands=2  # Permitindo coletar de ambas as mãos se necessário
+        num_hands=2  # Allowing collection from both hands if necessary
     )
 
     with HandLandmarker.create_from_options(options) as landmarker:
@@ -69,16 +69,16 @@ def main():
             h, w, _ = frame.shape
             
             if result.hand_landmarks:
-                # Loop por todas as mãos detectadas
+                # Loop through all detected hands
                 for hand_landmarks in result.hand_landmarks:
-                    # Salva no CSV se o Auto Save estiver ligado
+                    # Save to CSV if Auto Save is on
                     if AUTO_SAVE:
                         save_to_csv(hand_landmarks, TARGET_LABEL, CSV_FILENAME)
                         save_counter += 1
-                        # Feedback visual por mão (borda colorida indicando gravação)
+                        # Visual feedback per hand (colored border indicating recording)
                         cv2.rectangle(frame, (0,0), (w,h), (0, 0, 255), 2)
                     
-                    # Desenho do esqueleto
+                    # Draw skeleton
                     for connection in HAND_CONNECTIONS:
                         start_pt = (int(hand_landmarks[connection[0]].x * w), 
                                     int(hand_landmarks[connection[0]].y * h))
@@ -89,13 +89,13 @@ def main():
                     for landmark in hand_landmarks:
                         cv2.circle(frame, (int(landmark.x * w), int(landmark.y * h)), 4, (0, 0, 255), -1)
 
-            # Interface de Status
+            # Status Interface
             status_color = (0, 0, 255) if AUTO_SAVE else (255, 255, 255)
             status_text = "AUTO-SAVING" if AUTO_SAVE else "MANUAL MODE"
             
             cv2.putText(frame, f"LABEL: {TARGET_LABEL}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
             cv2.putText(frame, f"STATUS: {status_text}", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.7, status_color, 2)
-            cv2.putText(frame, f"SALVOS: {save_counter}", (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+            cv2.putText(frame, f"SAVED: {save_counter}", (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
             cv2.putText(frame, "'a' toggle auto | 's' manual | 'q' quit", (10, h - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1)
 
             cv2.imshow('Data Collector Pro', frame)
@@ -106,7 +106,7 @@ def main():
                     for hand_landmarks in result.hand_landmarks:
                         save_to_csv(hand_landmarks, TARGET_LABEL, CSV_FILENAME)
                         save_counter += 1
-                    print(f"Salvo manualmente: {TARGET_LABEL}")
+                    print(f"Manually saved: {TARGET_LABEL}")
             elif key == ord('a'):
                 AUTO_SAVE = not AUTO_SAVE
                 print(f"Auto-save: {AUTO_SAVE}")
