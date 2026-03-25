@@ -399,6 +399,7 @@ dependencies = [
     { name = "scikit-learn" },
     { name = "streamlit" },
     { name = "streamlit-webrtc" },
+    { name = "uvicorn" },
 ]
 
 [package.metadata]
@@ -410,6 +411,7 @@ requires-dist = [
     { name = "scikit-learn", specifier = ">=1.8.0" },
     { name = "streamlit", specifier = ">=1.55.0" },
     { name = "streamlit-webrtc", specifier = ">=0.64.5" },
+    { name = "uvicorn", specifier = ">=0.42.0" },
 ]
 
 [[package]]
