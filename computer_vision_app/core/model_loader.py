@@ -6,14 +6,14 @@ except (ImportError, ValueError):
     from config import MP_MODEL_PATH, CUSTOM_MODEL_PATH, ENCODER_PATH
 
 def load_custom_models():
-    """Carrega o classificador e o label encoder customizados."""
-    print("--- Carregando modelos customizados ---")
+    """Loads custom classifier and label encoder."""
+    print("--- Loading custom models ---")
     clf = joblib.load(CUSTOM_MODEL_PATH)
     label_encoder = joblib.load(ENCODER_PATH)
     return clf, label_encoder
 
 def get_mediapipe_options():
-    """Retorna as opções para inicializar o MediaPipe Gesture Recognizer."""
+    """Returns options to initialize MediaPipe Gesture Recognizer."""
     BaseOptions = mp.tasks.BaseOptions
     GestureRecognizerOptions = mp.tasks.vision.GestureRecognizerOptions
     VisionRunningMode = mp.tasks.vision.RunningMode

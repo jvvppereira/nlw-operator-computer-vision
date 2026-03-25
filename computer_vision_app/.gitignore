@@ -104,3 +104,6 @@ venv.bak/
 # *.joblib
 # *.task
 # models/
+
+.sesskey
+.env
